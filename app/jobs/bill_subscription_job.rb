@@ -5,6 +5,8 @@ class BillSubscriptionJob < ApplicationJob
 
   retry_on Sequenced::SequenceError, ActiveJob::DeserializationError
 
+  unique :until_executed
+
   def perform(subscriptions, timestamp, recurring: false, invoice: nil)
     result = Invoices::SubscriptionService.call(
       subscriptions:,
@@ -23,5 +25,10 @@ class BillSubscriptionJob < ApplicationJob
       recurring:,
       invoice: result.invoice,
     )
+  end
+
+  def lock_key_arguments
+    # NOTE: Ignore timestamp as it will change on every call
+    [arguments[0], arguments[2], arguments[3]]
   end
 end
