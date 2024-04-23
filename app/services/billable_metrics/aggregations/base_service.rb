@@ -10,7 +10,6 @@ module BillableMetrics
         @subscription = subscription
 
         @filters = filters
-        @group = filters[:group]
         @charge_filter = filters[:charge_filter]
         @event = filters[:event]
         @grouped_by = filters[:grouped_by]
@@ -49,7 +48,6 @@ module BillableMetrics
                     :charge,
                     :subscription,
                     :filters,
-                    :group,
                     :charge_filter,
                     :event,
                     :boundaries,

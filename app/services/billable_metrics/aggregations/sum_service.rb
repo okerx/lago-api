@@ -64,7 +64,8 @@ module BillableMetrics
         result.service_failure!(code: 'aggregation_failure', message: e.message)
       end
 
-      # NOTE: Return cumulative sum of field_name based on the number of free units (per_events or per_total_aggregation).
+      # NOTE: Return cumulative sum of field_name based on the number of free units
+      #       (per_events or per_total_aggregation).
       def running_total(options)
         free_units_per_events = options[:free_units_per_events].to_i
         free_units_per_total_aggregation = BigDecimal(options[:free_units_per_total_aggregation] || 0)
@@ -144,7 +145,6 @@ module BillableMetrics
           .order(timestamp: :desc, created_at: :desc)
 
         query = query.where.not(event_id: event.id) if event.present?
-        query = query.where(group_id: group.id) if group
         query = query.where(charge_filter_id: charge_filter.id) if charge_filter
 
         query.first

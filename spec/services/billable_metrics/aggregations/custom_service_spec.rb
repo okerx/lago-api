@@ -17,13 +17,12 @@ RSpec.describe BillableMetrics::Aggregations::CustomService, type: :service do
   end
 
   let(:event_store_class) { Events::Stores::PostgresStore }
-  let(:filters) { { group:, grouped_by: } }
+  let(:filters) { { grouped_by: } }
 
   let(:subscription) { create(:subscription) }
   let(:organization) { subscription.organization }
   let(:customer) { subscription.customer }
 
-  let(:group) { nil }
   let(:grouped_by) { nil }
 
   let(:billable_metric) do
