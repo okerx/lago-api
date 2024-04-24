@@ -12,13 +12,7 @@ module Wallets
 
       def call
         ongoing_usage_balance_cents = wallet.ongoing_usage_balance_cents
-
-        wallet.update!(
-          ongoing_usage_balance_cents: usage_amount_cents,
-          credits_ongoing_usage_balance: usage_credits_amount,
-          ongoing_balance_cents:,
-          credits_ongoing_balance:,
-        )
+        wallet.update!(update_attrs)
 
         handle_threshold_top_up(ongoing_usage_balance_cents)
 
@@ -29,6 +23,23 @@ module Wallets
       private
 
       attr_reader :wallet, :usage_credits_amount
+
+      def update_attrs
+        attrs = {
+          ongoing_usage_balance_cents: usage_amount_cents,
+          credits_ongoing_usage_balance: usage_credits_amount,
+          ongoing_balance_cents:,
+          credits_ongoing_balance:,
+        }
+
+        if !wallet.depleted_ongoing_balance? && ongoing_balance_cents <= 0
+          attrs.merge!(depleted_ongoing_balance: true)
+        elsif wallet.depleted_ongoing_balance? && ongoing_balance_cents.positive?
+          attrs.merge!(depleted_ongoing_balance: false)
+        end
+
+        attrs
+      end
 
       def handle_threshold_top_up(ongoing_usage_balance_cents)
         threshold_rule = wallet.recurring_transaction_rules.where(rule_type: :threshold).first
